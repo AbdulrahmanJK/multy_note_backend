@@ -105,4 +105,7 @@ module.exports.userController = {
       });
     }
   },  
+  getHello: async(req, res)=>{
+    await res.json("Hello Brooo")
+  }
   }
