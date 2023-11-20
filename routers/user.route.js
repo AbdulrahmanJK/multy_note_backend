@@ -8,5 +8,5 @@ router.post("/auth",  userController.registerUser); // Роут регистра
 router.post("/login",   userController.login); // Вход в учетную запись
 // router.get("/getMe", userController.getMe)
 router.patch("/patchUser/:id",  userController.patchUser)//Роут для редактирования профиля
-router.get("/check", userController.getHello)
+router.get("", userController.getHello)
 module.exports = router;
