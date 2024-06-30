@@ -19,6 +19,9 @@ const noteSchema = new mongoose.Schema({
     type:mongoose.SchemaTypes.ObjectId,
     ref:"User",
     required: true,
+  },
+  date: {
+    type: String
   }
 });
 

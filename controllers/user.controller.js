@@ -24,7 +24,7 @@ module.exports.userController = {
       username: username,
       password: hash,
     });
-
+console.log(user);
     res.json(user);
   },
   // Вход в учетную запись

@@ -1,44 +1,105 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "User and Note API",
-    "description": "API для работы с пользователями и заметками",
+    "title": "Мое API для заметок",
+    "description": "API для управления папками, заметками и пользователями",
     "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
-      "description": "Локальный сервер"
+      "url": "http://localhost:4000",
+      "description": "Local server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+        
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "Folder": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "609c25b4f1b4c37acc1cc3e1"
+          },
+          "name": {
+            "type": "string",
+            "example": "Моя папка"
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Note"
+            }
+          }
+        }
+      },
+      "Note": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Название заметки"
+          },
+          "title": {
+            "type": "string",
+            "example": "Заголовок заметки"
+          },
+          "account": {
+            "type": "string",
+            "example": "609c25b4f1b4c37acc1cc3e1"
+          },
+          "image": {
+            "type": "string",
+            "example": "http://example.com/image.jpg"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
     }
   ],
   "paths": {
     "/auth": {
       "post": {
+        "tags": ["Users"],
         "summary": "Регистрация пользователя",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  },
-                  "username": {
-                    "type": "string"
-                  },
-                  "password": {
-                    "type": "string"
-                  }
-                }
+                "$ref": "#/components/schemas/User"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Успешная регистрация пользователя. Возвращает информацию о пользователе.",
+            "description": "Пользователь успешно зарегистрирован",
             "content": {
               "application/json": {
                 "schema": {
@@ -48,85 +109,86 @@
             }
           },
           "400": {
-            "description": "Ошибка в запросе. Возвращает сообщение об ошибке.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Ошибка при регистрации"
           },
           "401": {
-            "description": "Пользователь уже существует. Возвращает сообщение об ошибке.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Пользователь уже существует"
           }
         }
       }
     },
     "/login": {
       "post": {
+        "tags": ["Users"],
         "summary": "Вход в учетную запись",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  },
-                  "password": {
-                    "type": "string"
-                  }
-                }
+                "$ref": "#/components/schemas/User"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Успешный вход. Возвращает токен аутентификации.",
+            "description": "Успешный вход",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "токен"
                 }
               }
             }
           },
           "401": {
-            "description": "Неверный логин или пароль. Возвращает сообщение об ошибке.",
+            "description": "Неверный Логин или пароль"
+          }
+        }
+      }
+    },
+    "/getMe": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Получение текущего пользователя",
+        "security": [{
+          "bearerAuth": []
+        }],
+        "responses": {
+          "200": {
+            "description": "Возвращает данные текущего пользователя",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
+          },
+          "404": {
+            "description": "Пользователь не найден"
+          },
+          "500": {
+            "description": "Произошла ошибка при получении информации о пользователе"
           }
         }
       }
     },
     "/patchUser/{id}": {
       "patch": {
+        "tags": ["Users"],
         "summary": "Редактирование профиля пользователя",
         "parameters": [
           {
-            "in": "path",
             "name": "id",
+            "in": "path",
             "required": true,
-            "description": "Идентификатор пользователя",
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "ID пользователя"
           }
         ],
         "requestBody": {
@@ -137,10 +199,12 @@
                 "type": "object",
                 "properties": {
                   "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "новое_имя"
                   },
                   "avatarURL": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "http://example.com/avatar.jpg"
                   }
                 }
               }
@@ -149,7 +213,7 @@
         },
         "responses": {
           "200": {
-            "description": "Успешное редактирование профиля пользователя. Возвращает информацию о пользователе.",
+            "description": "Профиль успешно обновлен",
             "content": {
               "application/json": {
                 "schema": {
@@ -158,22 +222,64 @@
               }
             }
           },
-          "400": {
-            "description": "Ошибка в запросе. Возвращает сообщение об ошибке.",
+          "404": {
+            "description": "Пользователь не найден"
+          },
+          "500": {
+            "description": "Произошла ошибка при обновлении данных пользователя"
+          }
+        }
+      }
+    },
+    "/folders": {
+      "post": {
+        "tags": ["Folders"],
+        "summary": "Создание папки",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Название папки"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Папка успешно создана",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Folder"
                 }
               }
             }
           },
-          "404": {
-            "description": "Пользователь не найден. Возвращает сообщение об ошибке.",
+          "400": {
+            "description": "Ошибка при создании папки"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Folders"],
+        "summary": "Получение всех папок",
+        "responses": {
+          "200": {
+            "description": "Список всех папок",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Folder"
+                  }
                 }
               }
             }
@@ -181,9 +287,83 @@
         }
       }
     },
-    "/makeNote": {
+    "/folders/{id}": {
+      "get": {
+        "tags": ["Folders"],
+        "summary": "Получение папки по ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID папки"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о папке",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Folder"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Папка не найдена"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Folders"],
+        "summary": "Удаление папки по ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID папки"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Папка успешно удалена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Folder"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Папка не найдена"
+          }
+        }
+      }
+    },
+    "/folders/{folderId}/notes": {
       "post": {
-        "summary": "Создание заметки",
+        "tags": ["Notes"],
+        "summary": "Добавление заметки в папку",
+        "parameters": [
+          {
+            "name": "folderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID папки"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -196,40 +376,82 @@
         },
         "responses": {
           "200": {
-            "description": "Заметка успешно создана",
+            "description": "Заметка успешно добавлена",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Note"
+                  "$ref": "#/components/schemas/Folder"
                 }
               }
             }
           },
-          "default": {
-            "description": "Неизвестная ошибка",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+          "400": {
+            "description": "Ошибка при добавлении заметки"
           }
         }
       }
     },
-    "/updateNote/{id}": {
-      "post": {
-        "summary": "Обновление заметки по ID",
+    "/folders/{folderId}/notes/{noteId}": {
+      "delete": {
+        "tags": ["Notes"],
+        "summary": "Удаление заметки из папки",
         "parameters": [
           {
+            "name": "folderId",
             "in": "path",
-            "name": "id",
             "required": true,
-            "description": "Идентификатор заметки",
             "schema": {
               "type": "string"
+            },
+            "description": "ID папки"
+          },
+          {
+            "name": "noteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID заметки"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Заметка успешно удалена из папки",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Folder"
+                }
+              }
             }
+          },
+          "404": {
+            "description": "Заметка или папка не найдена"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Notes"],
+        "summary": "Обновление заметки в папке",
+        "parameters": [
+          {
+            "name": "folderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID папки"
+          },
+          {
+            "name": "noteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID заметки"
           }
         ],
         "requestBody": {
@@ -253,133 +475,8 @@
               }
             }
           },
-          "default": {
-            "description": "Неизвестная ошибка",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/deleteNote/{id}": {
-      "patch": {
-        "summary": "Удаление заметки по ID",
-        "parameters": [
-          {
-            "in":
-            "path",
-            "name": "id",
-            "required": true,
-            "description": "Идентификатор заметки",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Заметка успешно удалена",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Note"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Неизвестная ошибка",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "/getNote": {
-        "get": {
-          "summary": "Получение всех заметок",
-          "responses": {
-            "200": {
-              "description": "Успешный запрос. Возвращает список заметок",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Note"
-                    }
-                  }
-                }
-              }
-            },
-            "default": {
-              "description": "Неизвестная ошибка",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Error"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "components": {
-      "schemas": {
-        "User": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string"
-            },
-            "username": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "email"
-          ]
-        },
-        "Note": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            },
-            "image": {
-              "type": "string"
-            },
-            "account": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "account"
-          ]
-        },
-        "Error": {
-          "type": "object",
-          "properties": {
-            "error": {
-              "type": "string"
-            }
+          "404": {
+            "description": "Заметка или папка не найдена"
           }
         }
       }
