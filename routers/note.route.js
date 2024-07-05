@@ -8,6 +8,7 @@ router.post("/folders", auth, noteController.createFolder); // Создание 
 router.delete("/folders/:id", auth, noteController.deleteFolder); // Удаление папки по ID
 router.get("/folders/:id", auth, noteController.getFolder); // Получение папки по ID
 router.get("/folders", auth, noteController.getAllFolders); // Получение всех папок
+router.patch("/folder", auth, noteController.patchFolder); // Обновление названия папки
 
 // Маршруты для заметок в папках
 router.post("/folders/:folderId/notes", auth, noteController.addNoteToFolder); // Добавление заметки в папку

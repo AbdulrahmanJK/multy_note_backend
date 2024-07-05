@@ -2,13 +2,11 @@ const Note = require("../models/Note.model");
 const Folder = require("../models/Folder.model");
 
 module.exports.noteController = {
-
-
   createFolder: async (req, res) => {
     try {
       const data = await Folder.create({
         name: req.body.name,
-        notes: []
+        notes: [],
       });
       return res.json(data);
     } catch (error) {
@@ -29,7 +27,9 @@ module.exports.noteController = {
   // Получение папки по ID
   getFolder: async (req, res) => {
     try {
-      const data = await Folder.findById(req.params.id).populate('notes.account');
+      const data = await Folder.findById(req.params.id).populate(
+        "notes.account"
+      );
       res.json(data);
     } catch (error) {
       res.status(400).json(error);
@@ -39,14 +39,28 @@ module.exports.noteController = {
   // Получение всех папок
   getAllFolders: async (req, res) => {
     try {
-      const data = await Folder.find().populate('notes.account');
+      const data = await Folder.find().populate("notes.account");
       res.json(data);
     } catch (error) {
       res.status(400).json(error);
     }
   },
 
+  patchFolder: async (req, res) => {
+    try {
+      const { name, id } = req.body;
+      const findFolder = await Folder.findById(id);
+      if (!findFolder) {
+        return res.status(404).json({ error: "Такой заметки не сеществует" });
+      }
+      findFolder.name = name;
 
+      await findFolder.save();
+      res.json({ message: "Заметка успешно изменена", data: findFolder });
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  },
 
   // //Добавление заметки
   // createNote: async (req, res) => {
@@ -97,7 +111,6 @@ module.exports.noteController = {
   //   try {
   //     const userId = req.user.id;
 
-
   //     const data = await Note.find({ account: userId });
 
   //     res.json(data);
@@ -106,7 +119,7 @@ module.exports.noteController = {
   //   }
   // },
 
-  // //Изменить заметку 
+  // //Изменить заметку
   // patchNote: async (req, res) => {
   //   const currentDate = new Date();
   //   const hours = currentDate.getHours();
@@ -153,7 +166,7 @@ module.exports.noteController = {
         title: req.body.title,
         account: req.body.account,
         image: req.body.image,
-        date: new Date()
+        date: new Date(),
       });
 
       const folder = await Folder.findById(req.params.folderId);
@@ -196,5 +209,5 @@ module.exports.noteController = {
     } catch (error) {
       res.status(400).json(error);
     }
-  }
+  },
 };
