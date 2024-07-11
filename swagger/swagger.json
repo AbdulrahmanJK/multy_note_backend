@@ -172,7 +172,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                 
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                      },
+                      "password": {
+                        "type": "string",
+                        "example": "password123"
+                      },
+                      "id": {
+                        "type": "string",
+                        "example": "490534950349654"
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "password"
+                    ]
                 }
               }
             }

@@ -17,14 +17,17 @@ module.exports.userController = {
       return res.status(401).json({ error: "Пользователь уже существует" });
     }
 
-    const hash = await bcrypt.hash(password.toString(), Number(process.env.BCRYPT_ROUNDS));
+    const hash = await bcrypt.hash(
+      password.toString(),
+      Number(process.env.BCRYPT_ROUNDS)
+    );
 
     const user = await User.create({
       email: email,
       username: username,
       password: hash,
     });
-console.log(user);
+    console.log(user);
     res.json(user);
   },
   // Вход в учетную запись
@@ -32,11 +35,11 @@ console.log(user);
     const { email, password } = req.body;
     const candidate = await User.findOne({ email: email });
     if (!candidate) {
-      return res.status(401).json({ error: "Неверный Логин или пароль" });
+      return res.status(400).json({ error: "Неверный Логин или пароль" });
     }
     const valid = await bcrypt.compare(password.toString(), candidate.password);
     if (!valid) {
-      return res.status(401).json({ error: "Неверный Логин или пароль" });
+      return res.status(400).json({ error: "Неверный Логин или пароль" });
     }
     const payload = {
       id: candidate._id,
@@ -50,34 +53,32 @@ console.log(user);
   },
   getMe: async (req, res) => {
     try {
-        const userId = req.user.id;
-        const currentUser = await User.findById(userId);
-  
-        if (!currentUser) {
-          return res
-            .status(404)
-            .json({ success: false, error: "Пользователь не найден" });
-        }
-        
-        // Добавляем email и username в объект с информацией о пользователе
-        const userData = {
-          _id: currentUser._id,
-          username: currentUser.username,
-          email: currentUser.email,
-      
-          // Другие поля пользователя, если они есть
-        };
-  
-        res.json({ success: true, user: userData });
-      } catch (error) {
-        console.error(error);
-        res
-          .status(500)
-          .json({
-            success: false,
-            error: "Произошла ошибка при получении информации о пользователе",
-          });
+      const userId = req.user.id;
+      const currentUser = await User.findById(userId);
+
+      if (!currentUser) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Пользователь не найден" });
       }
+
+      // Добавляем email и username в объект с информацией о пользователе
+      const userData = {
+        _id: currentUser._id,
+        username: currentUser.username,
+        email: currentUser.email,
+
+        // Другие поля пользователя, если они есть
+      };
+
+      res.json({ success: true, user: userData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        error: "Произошла ошибка при получении информации о пользователе",
+      });
+    }
   },
   patchUser: async (req, res) => {
     try {
@@ -87,14 +88,14 @@ console.log(user);
       if (!findUser) {
         return res.status(404).json({ error: "Пользователь не найден" });
       }
-  
+
       if (username) {
         findUser.username = username;
       }
       if (avatarURL) {
         findUser.avatarURL = avatarURL;
       }
-  
+
       await findUser.save();
       res.json({ success: true, user: findUser }); // Заменено existingUser на findUser
     } catch (error) {
@@ -104,8 +105,8 @@ console.log(user);
         error: "Произошла ошибка при обновлении данных пользователя",
       });
     }
-  },  
-  getHello: async(req, res)=>{
-    await res.json("Hello Brooo")
-  }
-  }
+  },
+  getHello: async (req, res) => {
+    await res.json("Hello Brooo");
+  },
+};
