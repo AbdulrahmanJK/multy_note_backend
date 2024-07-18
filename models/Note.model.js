@@ -15,11 +15,7 @@ const noteSchema = new mongoose.Schema({
     type:String,
     required: false, 
   },
-  account:{
-    type:mongoose.SchemaTypes.ObjectId,
-    ref:"User",
-    required: true,
-  },
+  
   date: {
     type: String
   }

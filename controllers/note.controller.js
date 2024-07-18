@@ -7,6 +7,8 @@ module.exports.noteController = {
       const data = await Folder.create({
         name: req.body.name,
         notes: [],
+        account: req.user.id,
+        
       });
       return res.json(data);
     } catch (error) {
@@ -17,7 +19,7 @@ module.exports.noteController = {
   // Удаление папки по ID
   deleteFolder: async (req, res) => {
     try {
-      const data = await Folder.findByIdAndRemove(req.params.id);
+      const data = await Folder.findByIdAndDelete(req.params.id);
       res.json(data);
     } catch (error) {
       res.status(400).json(error);
@@ -164,7 +166,6 @@ module.exports.noteController = {
       const note = new Note({
         name: req.body.name,
         title: req.body.title,
-        account: req.body.account,
         image: req.body.image,
         date: new Date(),
       });

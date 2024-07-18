@@ -6,6 +6,11 @@ const FolderNoteSchema = new mongoose.Schema({
     required: [true, 'Name is required'],
     unique: true,
   },
+  account:{
+    type:mongoose.SchemaTypes.ObjectId,
+    ref:"User",
+    required: true,
+  },
   notes: []
 });
 

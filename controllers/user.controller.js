@@ -54,6 +54,7 @@ module.exports.userController = {
   getMe: async (req, res) => {
     try {
       const userId = req.user.id;
+      console.log(userId);
       const currentUser = await User.findById(userId);
 
       if (!currentUser) {

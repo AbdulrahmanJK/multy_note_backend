@@ -32,10 +32,7 @@
             "example": "password123"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "Folder": {
         "type": "object",
@@ -67,10 +64,7 @@
             "type": "string",
             "example": "Заголовок заметки"
           },
-          "account": {
-            "type": "string",
-            "example": "609c25b4f1b4c37acc1cc3e1"
-          },
+
           "image": {
             "type": "string",
             "example": "http://example.com/image.jpg"
@@ -87,9 +81,7 @@
   "paths": {
     "/auth": {
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Регистрация пользователя",
         "requestBody": {
           "required": true,
@@ -123,9 +115,7 @@
     },
     "/login": {
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Вход в учетную запись",
         "requestBody": {
           "required": true,
@@ -157,9 +147,7 @@
     },
     "/getMe": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Получение текущего пользователя",
         "security": [
           {
@@ -172,25 +160,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                 
-                    "properties": {
-                      "email": {
-                        "type": "string",
-                        "example": "user@example.com"
-                      },
-                      "password": {
-                        "type": "string",
-                        "example": "password123"
-                      },
-                      "id": {
-                        "type": "string",
-                        "example": "490534950349654"
-                      }
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "user@example.com"
                     },
-                    "required": [
-                      "email",
-                      "password"
-                    ]
+                    "password": {
+                      "type": "string",
+                      "example": "password123"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "490534950349654"
+                    }
+                  },
+                  "required": ["email", "password"]
                 }
               }
             }
@@ -206,9 +190,7 @@
     },
     "/patchUser/{id}": {
       "patch": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Редактирование профиля пользователя",
         "parameters": [
           {
@@ -263,9 +245,7 @@
     },
     "/folders": {
       "post": {
-        "tags": [
-          "Folders"
-        ],
+        "tags": ["Folders"],
         "summary": "Создание папки",
         "requestBody": {
           "required": true,
@@ -300,9 +280,7 @@
         }
       },
       "get": {
-        "tags": [
-          "Folders"
-        ],
+        "tags": ["Folders"],
         "summary": "Получение всех папок",
         "responses": {
           "200": {
@@ -323,9 +301,7 @@
     },
     "/folders/{id}": {
       "get": {
-        "tags": [
-          "Folders"
-        ],
+        "tags": ["Folders"],
         "summary": "Получение папки по ID",
         "parameters": [
           {
@@ -355,9 +331,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Folders"
-        ],
+        "tags": ["Folders"],
         "summary": "Удаление папки по ID",
         "parameters": [
           {
@@ -389,9 +363,7 @@
     },
     "/folder": {
       "patch": {
-        "tags": [
-          "Folders"
-        ],
+        "tags": ["Folders"],
         "summary": "Обновление названия существующей папки",
         "description": "API для обновления названия папки, используя ID папки, передаваемый в теле запроса.",
         "requestBody": {
@@ -412,10 +384,7 @@
                     "example": "Обновленное название"
                   }
                 },
-                "required": [
-                  "id",
-                  "name"
-                ]
+                "required": ["id", "name"]
               }
             }
           }
@@ -447,9 +416,7 @@
     },
     "/folders/{folderId}/notes": {
       "post": {
-        "tags": [
-          "Notes"
-        ],
+        "tags": ["Notes"],
         "summary": "Добавление заметки в папку",
         "parameters": [
           {
@@ -491,9 +458,7 @@
     },
     "/folders/{folderId}/notes/{noteId}": {
       "delete": {
-        "tags": [
-          "Notes"
-        ],
+        "tags": ["Notes"],
         "summary": "Удаление заметки из папки",
         "parameters": [
           {
@@ -532,9 +497,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Notes"
-        ],
+        "tags": ["Notes"],
         "summary": "Обновление заметки в папке",
         "parameters": [
           {
