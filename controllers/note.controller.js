@@ -8,7 +8,7 @@ module.exports.noteController = {
         name: req.body.name,
         notes: [],
         account: req.user.id,
-        
+
       });
       return res.json(data);
     } catch (error) {
@@ -29,9 +29,7 @@ module.exports.noteController = {
   // Получение папки по ID
   getFolder: async (req, res) => {
     try {
-      const data = await Folder.findById(req.params.id).populate(
-        "notes.account"
-      );
+      const data = await Folder.findById(req.params.id)
       res.json(data);
     } catch (error) {
       res.status(400).json(error);
@@ -41,7 +39,8 @@ module.exports.noteController = {
   // Получение всех папок
   getAllFolders: async (req, res) => {
     try {
-      const data = await Folder.find().populate("notes.account");
+      const data = await Folder.find({ account: req.user.id });
+
       res.json(data);
     } catch (error) {
       res.status(400).json(error);
